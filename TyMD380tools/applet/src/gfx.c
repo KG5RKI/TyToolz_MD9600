@@ -6,19 +6,19 @@
 
 #include "md380.h"
 #include "version.h"
-#include "tooldfu.h"
+//#include "tooldfu.h"
 #include "config.h"
 #include "gfx.h"
 #include "printf.h"
 #include "string.h"
-#include "addl_config.h"
+//#include "addl_config.h"
 #include "codeplug.h"
 //#include "display.h"
 #include "console.h"
-#include "netmon.h"
-#include "debug.h"
+//#include "netmon.h"
+//#include "debug.h"
 #include "usersdb.h"
-#include "lastheard.h" // reduce number of warnings - use function prototypes
+//#include "lastheard.h" // reduce number of warnings - use function prototypes
 //#include "app_menu.h" // optional 'application' menu, activated by red BACK-button
           // When visible, some gfx-calls must be disabled via our hooks
           // to prevent interference from Tytera's "gfx" (similar as for Netmon)
@@ -44,35 +44,35 @@ uint32_t rgb16torgb(uint32_t color) {
 
 void swapFGBG() {
 	uint32_t fg_color = 0, bg_color = 0;
-	if (global_addl_config.alt_text) {
+	/*if (global_addl_config.alt_text) {
 		fg_color = global_addl_config.fg_color;
 		bg_color = global_addl_config.bg_color;
 		fg_color = rgb16torgb(fg_color);
 		bg_color = rgb16torgb(bg_color);
 		gfx_set_bg_color(bg_color);
 		gfx_set_fg_color(fg_color);
-	}
+	}*/
 }
 void swapFGBGi() {
 	uint32_t fg_color = 0, bg_color = 0;
-	if (global_addl_config.alt_text) {
+	/*if (global_addl_config.alt_text) {
 		fg_color = global_addl_config.fg_color;
 		bg_color = global_addl_config.bg_color;
 		fg_color = rgb16torgb(fg_color);
 		bg_color = rgb16torgb(bg_color);
 		gfx_set_bg_color(fg_color);
 		gfx_set_fg_color(bg_color);
-	}
+	}*/
 }
 void swapBG() {
 	uint32_t fg_color = 0, bg_color = 0;
-	if (global_addl_config.alt_text) {
+	/*if (global_addl_config.alt_text) {
 		fg_color = global_addl_config.fg_color;
 		bg_color = global_addl_config.bg_color;
 		fg_color = rgb16torgb(fg_color);
 		bg_color = rgb16torgb(bg_color);
 		gfx_set_bg_color(bg_color);
-	}
+	}*/
 }
 
 void drawtext(wchar_t *text, int x, int y)
@@ -176,12 +176,12 @@ void rx_screen_blue_hook(unsigned int bg_color)
 	uint16_t fg_color = 0x000000;
 	//channel_info_t *ci = &current_channel_info;
 
-	if (global_addl_config.alt_text) {
+	/*if (global_addl_config.alt_text) {
 		fg_color = global_addl_config.fg_color;
 		bg_color = global_addl_config.bg_color;
 		bg_color = rgb16torgb(bg_color);
 		fg_color = rgb16torgb(fg_color);
-	}
+	}*/
 
 	dst = rst_dst;
 	src = rst_src;
@@ -215,13 +215,13 @@ void rx_screen_blue_hook(unsigned int bg_color)
 
 	int y_index = RX_POPUP_Y_START;
 
-	if (grp) {
+	/*if (grp) {
 		gfx_printf_pos(RX_POPUP_X_START, y_index, "%d->TG %d", src, dst);
 	}
 	else {
 		gfx_printf_pos(RX_POPUP_X_START, y_index, "%d->%d", src, dst);
 	}
-	y_index += GFX_FONT_SMALL_HEIGHT;
+	y_index += GFX_FONT_SMALL_HEIGHT;*/
 
 	gfx_select_font(gfx_font_norm); // switch to large font
 
@@ -275,7 +275,7 @@ void rx_screen_blue_hook(unsigned int bg_color)
 	gfx_select_font(gfx_font_small);
 
 
-		if (src != 0) {
+	/*	if (src != 0) {
 			gfx_select_font(gfx_font_small);
 			gfx_puts_pos(RX_POPUP_X_START, y_index, usr.place);
 			y_index += GFX_FONT_SMALL_HEIGHT;
@@ -285,7 +285,7 @@ void rx_screen_blue_hook(unsigned int bg_color)
 
 			gfx_puts_pos(RX_POPUP_X_START, y_index, usr.country);
 			y_index += GFX_FONT_SMALL_HEIGHT;
-		}
+		}*/
 	
 
 	gfx_select_font(gfx_font_norm);
@@ -456,9 +456,9 @@ void print_date_hook(void)
   //  { return; 
   //  }
 # endif
-    if( is_netmon_visible() ) {
-        return;
-    }
+   // if( is_netmon_visible() ) {
+    //    return;
+  //  }
 
 	/*if (global_addl_config.alt_text) {
 		uint32_t fg_color = 0, bg_color = 0;
@@ -469,7 +469,7 @@ void print_date_hook(void)
 		gfx_set_fg_color(fg_color);
 	}*/
 
-    wchar_t wide[40];
+   /* wchar_t wide[40];
     RTC_DateTypeDef RTC_DateStruct;
     md380_RTC_GetDate(RTC_Format_BCD, &RTC_DateStruct);
 
@@ -527,12 +527,12 @@ void print_date_hook(void)
 
 	swapFGBG();
 
-    gfx_drawtext2(wide, 0xa, 0x60, 0x5e);
+    gfx_drawtext2(wide, 0xa, 0x60, 0x5e);*/
 }
 
 void get_RTC_time(char* buffer) {
 
-	wchar_t wide_time[9];
+	/*wchar_t wide_time[9];
 
 	RTC_TimeTypeDef RTC_TimeStruct;
 	md380_RTC_GetTime(RTC_Format_BCD, &RTC_TimeStruct);
@@ -552,41 +552,11 @@ void get_RTC_time(char* buffer) {
 		
 		*buffer = wide_time[i];
 		buffer++;
-	}
+	}*/
 }
-
+ 
 void print_time_hook(const char log) // ex: void print_time_hook(void), 'log' used by netmon.c
 {
-    if( is_netmon_visible() ) {
-        return;
-    }
-    wchar_t wide_time[9];
-
-	swapFGBG();
-
-    RTC_TimeTypeDef RTC_TimeStruct;
-    md380_RTC_GetTime(RTC_Format_BCD, &RTC_TimeStruct);
-
-    md380_itow(&wide_time[0], RTC_TimeStruct.RTC_Hours);
-    wide_time[2] = ':';
-    md380_itow(&wide_time[3], RTC_TimeStruct.RTC_Minutes);
-    wide_time[5] = ':';
-    md380_itow(&wide_time[6], RTC_TimeStruct.RTC_Seconds);
-    wide_time[8] = '\0';
- 
-    for (int i = 0; i < 9; i++) 
-     {
-        if( wide_time[i] == '\0' )
-            break;
-        if ( log == 'l' ) {
-           lastheard_putch(wide_time[i]);
-           // "warning: implicit declaration of function 'lastheard_putch'" - added prototype in *.h
-        } else if ( log == 'c' ) {
-           clog_putch(wide_time[i]);
-        } else if ( log == 's' ) {
-           slog_putch(wide_time[i]);
-        }
-    }
 } 
 
 // deprecated, left for other versions.
@@ -598,9 +568,9 @@ void print_ant_sym_hook(char *bmp, int x, int y)
    //  }
 # endif
 
-    if( is_netmon_visible() ) {
-        return ;
-    }
+    //if( is_netmon_visible() ) {
+    //    return ;
+   // }
 
 	//swapFGBG();
 
@@ -636,13 +606,13 @@ void gfx_blockfill_hook(int x_from, int y_from, int x_to, int y_to)
 # endif
 
 
-    if( y_from == 0 && x_from == 61 ) {
-        con_redraw();
-    }
-    if( is_netmon_visible() ) {
+   // if( y_from == 0 && x_from == 61 ) {
+   //     con_redraw();
+   // }
+   // if( is_netmon_visible() ) {
         // no blockfills
-        return ;
-    }
+   //     return ;
+  //  }
 
 	if (gui_opmode2 != OPM2_MENU) {
 		swapFGBGi();
@@ -670,17 +640,17 @@ void gfx_drawbmp_hook( void *bmp, int x, int y )
   //  }
 # endif
 
-    swapFGBG();
+   // swapFGBG();
 
     // supress bmp drawing in console mode.
-    if( is_netmon_visible() ) {
-        if( x == D_ICON_ANT_X && y == D_ICON_ANT_Y ) {
+   // if( is_netmon_visible() ) {
+   //     if( x == D_ICON_ANT_X && y == D_ICON_ANT_Y ) {
             // antenne icon draw.
-            con_redraw();
-        }
-        return ;
-    }
-    gfx_drawbmp( bmp, x, y );
+           // con_redraw();
+   //     }
+   //     return ;
+   // }
+   // gfx_drawbmp( bmp, x, y );
     // redraw promiscous mode eye icon overlapped by antenna icon
     //if(  ( global_addl_config.promtg ) && ( y == 0 )) 
 	{
@@ -711,9 +681,9 @@ void gfx_drawtext2_hook(wchar_t *str, int x, int y, int xlen)
         //printf("ctd: %d %d %d %S\n", x, y, xlen, str);
     }
     
-    if( is_netmon_visible() ) {
-        return ;
-    }
+  //  if( is_netmon_visible() ) {
+  //      return ;
+  //  }
     
 	swapFGBG();
 
@@ -735,7 +705,7 @@ void gfx_drawtext4_hook(wchar_t *str, int x, int y, int xlen, int ylen)
 //		return;
 //	}
     
-    if( is_netmon_visible() ) {
+  //  if( is_netmon_visible() ) {
         // channel name
         /*if( x == D_TEXT_CHANNAME_X && y == D_TEXT_CHANNAME_Y ) {
             return ;
@@ -744,12 +714,12 @@ void gfx_drawtext4_hook(wchar_t *str, int x, int y, int xlen, int ylen)
         if( x == D_TEXT_ZONENAME_X && y == D_TEXT_ZONENAME_Y ) {
             return ;
         }*/
-		return;
-    }
+	//	return;
+   // }
 
-	swapFGBG();
+//	swapFGBG();
     
-    gfx_drawtext4(str,x,y,xlen,ylen);
+ //   gfx_drawtext4(str,x,y,xlen,ylen);
 
 }
 
@@ -765,9 +735,9 @@ void gfx_drawchar_pos_hook( int r0, int r1, int r2 )
   //  }
 # endif
 
-    if( is_netmon_visible() ) {
-        return ;
-    }
+//    if( is_netmon_visible() ) {
+ //       return ;
+  //  }
 
 	swapFGBG();
 
@@ -863,11 +833,11 @@ void draw_statusline_hook(uint32_t r0)
 	// Fixed by also calling Menu_DrawIfVisible() from other places .
 # endif // CONFIG_APP_MENU ?
 
-	if (is_netmon_visible()) {
-		con_redraw();
-		return;
-	}
-	draw_statusline(r0);
+	//if (is_netmon_visible()) {
+	//	con_redraw();
+	//	return;
+//	}
+	//draw_statusline(r0);
 }
 
 extern uint32_t current_contact;
@@ -892,70 +862,7 @@ void draw_alt_statusline()
 	//gfx_set_fg_color(0xFFAA55);
 	//gfx_blockfill(STATUS_LINE_X_START, STATUS_LINE_Y_START, STATUS_LINE_X_START + 94, STATUS_LINE_Y_START + 12);
 
-	gfx_set_fg_color(0);
-	gfx_set_bg_color(0xFFAA55);
-	gfx_select_font(gfx_font_small);
-
-	char mode = ' ';
-	if (rst_voice_active) {
-		if (rst_mycall) {
-			mode = '*'; // on my tg            
-		}
-		else {
-			mode = '!'; // on other tg
-		}
-	}
-
-	user_t usr, usr2;
-	src = rst_src;
-
-	if (src == 0) {
-		if (global_addl_config.datef == 5 || global_addl_config.datef >= 7)
-		{
-			gfx_printf_pos2(STATUS_LINE_X_START, STATUS_LINE_Y_START, 120, "lh:                                  ");
-		}
-		else {
-			gfx_printf_pos2(STATUS_LINE_X_START, STATUS_LINE_Y_START, 120, "TA:                                  ");
-		}
-	}
-	else {
-		if (global_addl_config.datef == 6 && talkerAlias.length > 0)				// 2017-02-18 show talker alias in status if rcvd valid
-		{
-			gfx_printf_pos2(STATUS_LINE_X_START, STATUS_LINE_Y_START, 120, "TA: %s                                  ", talkerAlias.text);
-		}
-		else {										// 2017-02-18 otherwise show lastheard in status line
-
-			if (usr_find_by_dmrid(&usr, src) == 0) {
-				if (usr_find_by_dmrid(&usr2, rst_dst) != 0 && cfg_tst_display_flag(&global_addl_config, ShowLabelTG)) {
-					gfx_printf_pos2(STATUS_LINE_X_START, STATUS_LINE_Y_START, 120, "lh:%d->%s %c                                  ", src, usr2.callsign, mode);
-				}
-				else {
-					gfx_printf_pos2(STATUS_LINE_X_START, STATUS_LINE_Y_START, 120, "lh:%d->%d %c                                  ", src, rst_dst, mode);
-				}
-			}
-			else {
-
-				if (usr_find_by_dmrid(&usr2, rst_dst) != 0 && cfg_tst_display_flag(&global_addl_config, ShowLabelTG)) {
-					if (global_addl_config.datef == 7) {
-						gfx_printf_pos2(STATUS_LINE_X_START, STATUS_LINE_Y_START, 120, "lh:%s %s->%d %c                                  ", usr.callsign, usr.firstname, rst_dst, mode);
-					}
-					else if (global_addl_config.datef == 8) {
-						gfx_printf_pos2(STATUS_LINE_X_START, STATUS_LINE_Y_START, 120, "lh:%s %s->%s %c                                  ", usr.callsign, usr.firstname, usr2.callsign, mode);
-					}
-					else {
-						gfx_printf_pos2(STATUS_LINE_X_START, STATUS_LINE_Y_START, 120, "lh:%s->%s %c                                  ", usr.callsign, usr2.callsign, mode);
-					}
-				}
-				else {
-					gfx_printf_pos2(STATUS_LINE_X_START, STATUS_LINE_Y_START, 120, "lh:%s %s->%d %c                                  ", usr.callsign, (global_addl_config.datef == 7 ? usr.firstname : " "), rst_dst, mode);
-				}
-			}
-		}
-	}
-
-	gfx_set_fg_color(0);
-	gfx_set_bg_color(0xff000000);
-	gfx_select_font(gfx_font_norm);
+	
 }
 
 static int fDoOnceHook = 0;
@@ -974,7 +881,7 @@ void draw_adhoc_statusline()
 	{
 		//int x =  20;
 		//int y = 96 - 4;
-		gfx_set_fg_color(0);
+		/*gfx_set_fg_color(0);
 		gfx_set_bg_color(0xff8032);
 		gfx_select_font(gfx_font_small);
 		//BOOL fIsAnalog = current_channel_info_E.bIsAnalog;
@@ -995,7 +902,7 @@ void draw_adhoc_statusline()
 		//draw_extra_info();
 		gfx_set_fg_color(0);
 		gfx_set_bg_color(0xff000000);
-		gfx_select_font(gfx_font_norm);
+		gfx_select_font(gfx_font_norm);*/
 	}
 
 
@@ -1008,21 +915,21 @@ void draw_datetime_row_hook()
 # endif
 
 
-	if (is_netmon_visible()) {
-		return;
-	}
+	//if (is_netmon_visible()) {
+//		return;
+	//}
 	
-	if (is_statusline_visible()) {
+	//if (is_statusline_visible()) {
 		/*if (ad_hoc_talkgroup)
 		{
 			draw_adhoc_statusline();
 		}*/
-		draw_alt_statusline();
-		return;
-	}
-	else {
-		draw_datetime_row();
-	}
+	//	draw_alt_statusline();
+	//	return;
+//	}
+//	else {
+//		draw_datetime_row();
+//	}
 	
 
 }

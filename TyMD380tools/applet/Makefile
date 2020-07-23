@@ -59,7 +59,7 @@ else
 $(error select firmware version)
 endif
 
-SRCS  = aes.o system_stm32f4xx.o 
+SRCS  = printf.o usersdb.o dmesg.o display.o gfx.o dmr.o radiostate.o main.o aes.o system_stm32f4xx.o 
 
 ###################################################
 

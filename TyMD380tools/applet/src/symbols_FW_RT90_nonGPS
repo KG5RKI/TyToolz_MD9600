@@ -1,3 +1,92 @@
 
 aes_cipher                    = 0x0804C889 ;
 aes_cipher2                   = 0x0804C881 ;
+
+
+gui_opmode1_prev                         =  0x2001CEE1;
+gui_opmode1                              =  0x2001CEE2;
+gui_opmode2                              =  0x2001CEE0;
+gui_opmode3                              =  0x2001CF27;
+
+gfx_font_norm                            =  0x080B70DC;
+gfx_font_small                           =  0x080B70BC;
+
+gfx_select_font                          =  0x0802A635;
+
+gfx_set_bg_color                         =  0x08025735;
+gfx_set_fg_color                         =  0x0802573D;
+
+gfx_drawtext2                            =  0x0802B0DD;
+gfx_drawtext10                           =  0x0800DD91;
+gfx_drawchar_pos                         =  0x0802F401;
+
+
+md380_radio_config                       =  0x2001BB54;
+
+toplinetext                              =  0x2001CB90;
+currentMenuItemTitle                     =  0x2001CB94;
+micGainValue                             =  0x2001CBA0;
+
+gfx_clear3                               =  0x0802B08D;
+gfx_drawtext                             =  0x0800DDC1;
+gfx_drawtext4                            =  0x0802B0EF;
+gfx_drawtext7                            =  0x0802F9C3;
+gfx_blockfill                            =  0x0802AB6F;
+gfx_drawbmp                              =  0x0802F4B7;
+
+dmr_handle_data                          =  0x08070B55;
+dmr_call_end                             =  0x0804FA91;
+dmr_call_start                           =  0x0804ED07;
+dmr_sms_arrive                           =  0x0804F404;
+dmr_CSBK_handler                         =  0x0804FFF1;
+
+radio_status_1                           =  0x2001CC54;
+
+OS_ENTER_CRITICAL                        =  0x08061421;
+OS_EXIT_CRITICAL                         =  0x08061429;
+
+OSSemPost                                =  0x080613C5;
+OSSemPend                                =  0x080612D5;
+OSSemCreate                              =  0x08061289;
+md380_OSMboxPend                         =  0x08041301;
+md380_OSMboxPost                         =  0x08041419;
+
+sema1_poi                                =  0x2001CCEC;
+sema1_poi                                =  0x2001CCC0;
+event3_mbox_poi                          =  0x2001CCE0;
+event4_mbox_poi                          =  0x2001CCD8;
+event2_mbox_poi_beep                     =  0x2001CD00;
+
+
+kb_row_col_pressed                       =  0x2001CED9;
+channelA                                 =  0x2001C170;
+channel_A_destination                    =  0x2001C57C;
+
+current_channel_info                     =  0x2001C0B0;
+current_contact                          =  0x2001CC40;
+
+md380_lastheard_dest                     =  0x2001CC48;
+md380_lastheard_dmrid                    =  0x2001CC44;
+md380_dmr_id                             =  0x2001CBE4;
+
+beep_code_send                           =  0x2001CF3D;
+dmr_lc_header_buffer                     =  0x2001C7A4;
+
+q_status_4                               =  0x2001CC68;
+sub_805F562                              =  0x0805F193;
+
+read_contact                             =  0x0802CD50;
+
+
+f_4225                                   =  0x08027EED;
+F_4315                                   =  0x08032B2D;
+
+md380_spiflash_read                      =  0x08043859;
+md380_spiflash_disable                   =  0x08043935;
+md380_spiflash_enable                    =  0x0804390B;
+md380_spi_sendrecv                       =  0x0804389F;
+md380_spiflash_sektor_erase4k            =  0x08043671;
+md380_spiflash_wait                      =  0x080438EB;
+md380_spiflash_write                     =  0x0804395B;
+md380_spiflash_sektor_erase4k            =  0x08043C81;
+

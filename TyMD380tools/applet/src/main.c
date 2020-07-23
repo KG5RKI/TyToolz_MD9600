@@ -12,7 +12,7 @@
 #include <string.h>
 #include "dmesg.h"
 #include "config.h"  // need to know CONFIG_DIMMED_LIGHT (defined in config.h since 2017-01-03)
-#include "printf.h"
+//#include "printf.h"
 #include "version.h"
 #include "usersdb.h"
 #include "radiostate.h"

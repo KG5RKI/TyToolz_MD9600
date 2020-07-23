@@ -57,7 +57,7 @@ void draw_eye_opt()
 {
     // draw promiscous mode eye symbol 
     if( global_addl_config.promtg == 1 ) {
-        gfx_drawbmp((char *) &bmp_eye, D_ICON_EYE_X, D_ICON_EYE_Y);
+        //gfx_drawbmp((char *) &bmp_eye, D_ICON_EYE_X, D_ICON_EYE_Y);
     }
 }
 
@@ -91,264 +91,6 @@ int intCentibel(long ampli)
 #define RX_POPUP_Y_START 24
 #define RX_POPUP_X_START 10
 
-void draw_txt(char* testStr, int x, int y, char font){
-	char c=0;
-	int maxLen=16;
-	uint16_t fg_color = 0, bg_color = 0;
-	Menu_GetColours(SEL_FLAG_NONE, &fg_color, &bg_color);
-	while( ((c=*testStr)!=0)  && maxLen>0)
-	{ x = LCD_DrawCharAt( c, x, y, fg_color, bg_color, font);
-		//++i; // character index and limiting counter
-	    ++testStr; 
-		// (in rare cases, some of the leading text may be OVERWRITTEN below)
-		maxLen--;
-	}		 
-}
-
-int fDoOnce = 0;
-
-void draw_micbargraph()
-{
-	int dst;
-    int src;
-    int grp ;
-	uint16_t fg_color = 0, bg_color = 0;
-	
-    
-    dst = rst_dst ;
-    src = rst_src ;
-    grp = rst_grp ;
-	
-    if( gui_opmode2 == OPM2_MENU ) {
-        // case for pressing the PTT during 'Manual Dial' in 'Contacts'
-        return ;
-    }
-	Menu_GetColours(SEL_FLAG_NONE, &fg_color, &bg_color);
-	
-    
-    //int primask = OS_ENTER_CRITICAL(); // for form sake
-//    dst = g_dst;
-//    src = g_src;
-    
-    
-	
-	
-    
-    static int rx_active; // flag to syncronice this hook ( operatingmode == 0x11 is also on rx seeded)
-    static int fullscale_offset = 0;
-    static uint32_t lastframe = 0;
-    static int red = 0;
-    static int green = 0;
-
-    int relative_peak_cb;
-    int centibel_val;
-
-    if( fullscale_offset == 0 ) { // init int_centibel()
-        fullscale_offset = intCentibel(3000); // maybe wav max max_level
-    }
-    
-    int is_tx = 0 ;
-    int is_rx = 0 ;
-
-    is_tx = gui_opmode1 == SCR_MODE_RX_VOICE && max_level > 10 ;
-    is_rx = gui_opmode1 == SCR_MODE_RX_TERMINATOR ;
-
-#if defined(FW_D13_020) || defined(FW_S13_020)
-    {
-//        uint8_t *rs = (void*)0x2001e5f0 ;
-        uint8_t s = radio_status_1.m1 ;
-        
-        is_tx = s & 1 ;
-        is_rx = s & 2 ;
-    }
-#endif    
-
-
-    if( is_tx && max_level < 4500 ) { 
-        if( lastframe < ambe_encode_frame_cnt ) { // check for new frame
-            lastframe = ambe_encode_frame_cnt;
-            rx_active = 1;
-
-            relative_peak_cb = intCentibel(max_level) - fullscale_offset;
-            centibel_val = relative_peak_cb;
-
-			CheckTalkgroupAfterChannelSwitch();
-
-			if (lastframe % 5 == 1) 
-			{ // reduce drawing
-				if (centibel_val < -280) { // limit 160 pixel bargraph 10 150 -> 140 pixel for bargraph
-					centibel_val = -280;
-				}
-				else if (centibel_val > 0) {
-					centibel_val = 0;
-				}
-				centibel_val += 280; // shift to positive
-				centibel_val /= 2; // scale
-
-				
-				if((fDoOnce == 0 || fDoOnce == 15) && global_addl_config.micbargraph>2){
-					//gfx_set_bg_color(bg_color);
-					//gfx_blockfill(0, 16, MAX_X, MAX_Y); 
-					//fDoOnce = 1;
-					LCD_FillRect(0, 16, MAX_X - 1/*x2*/,
-						MAX_Y - 1/*y2*/, bg_color);
-					fDoOnce = 0;
-				}
-				
-
-				gfx_set_fg_color(0x888888);
-				gfx_set_bg_color(bg_color);
-                
-			
-				//if horizontal
-				if(global_addl_config.micbargraph==1){
-
-					gfx_blockfill(9, 54, 151, 66);
-					
-					// paint legend
-					gfx_set_fg_color(0x0000ff);
-					gfx_blockfill((-30 + 280) / 2 + 10, 67, 150, 70);
-					gfx_set_fg_color(0x00ff00);
-					gfx_blockfill((-130 + 280) / 2 + 10, 67, (-30 + 280) / 2 - 1 + 10, 70);
-					gfx_set_fg_color(0x555555);
-					gfx_blockfill(10, 67, (-130 + 280) / 2 - 1 + 10, 70);
-
-					// set color
-					if( relative_peak_cb > -3 || red > 0 ) {
-						if( red > 0 ) red--;
-						if( relative_peak_cb > -3 ) red = 30;
-						gfx_set_fg_color(0x0000ff);
-					} else if( relative_peak_cb > -130 || green > 0 ) {
-						if( green > 0 ) green--;
-						if( relative_peak_cb > -130 ) green = 30;
-						gfx_set_fg_color(0x00ff00);
-					} else {
-						gfx_set_fg_color(0x555555);
-					}
-					gfx_set_bg_color(0xff000000);
-					gfx_blockfill(10, 55, centibel_val, 65);
-					gfx_set_fg_color(0xff8032);
-					gfx_set_bg_color(bg_color);
-					
-				//vertical
-				}else if(global_addl_config.micbargraph>=2 && global_addl_config.micbargraph != 4){
-					
-					//gfx_blockfill(143, 22, 148, 120);
-					
-					//red (135, 67, 150, 70)
-					//green (85,67,134,70)
-					//gray (10, 67, 84, 70)
-					//10 - 150 = 140
-					//red - 15 / 140 = 10%
-					//green - 49 / 140 = 35%
-					//gray - 74 / 140 = 55%
-					
-					gfx_blockfill(140, 20, 152, 124);
-					
-					//centibel_val = (int)(((float)centibel_val / 160.0f) * 98.0f);
-					centibel_val = (centibel_val-10)/2;
-					// paint legend
-					gfx_set_fg_color(0x0000ff); //red
-					gfx_blockfill(147, 22, 150, 40);
-					gfx_set_fg_color(0x00ff00); //green
-					gfx_blockfill(147, 40, 150, 81);
-					gfx_set_fg_color(0x555555); //gray
-					gfx_blockfill(147, 81, 150, 120);
-					
-					
-					
-					gfx_set_fg_color(0x0000ff); //gray
-					// set color
-					if( relative_peak_cb > -2 || red > 0 ) {
-						if( red > 0 ) red--;
-						if( relative_peak_cb > -2 ) red = 30;
-						gfx_set_fg_color(0x0000ff);
-					} else if( relative_peak_cb > -130 || green > 0 ) {
-						if( green > 0 ) green--;
-						if( relative_peak_cb > -130 ) green = 30;
-						gfx_set_fg_color(0x00ff00);
-					} else {
-						gfx_set_fg_color(0x555555);
-					}
-					
-					int y_index = RX_POPUP_Y_START;
-					gfx_set_bg_color(0xff000000);
-					if(centibel_val>0 && centibel_val < 120){
-						gfx_blockfill(140, 22+(98-centibel_val), 145, 120);
-					}
-					
-					
-					//gfx_blockfill(10, 55, centibel_val, 65);
-					gfx_set_fg_color(0xff8032);
-					gfx_set_bg_color(bg_color);
-					
-					//draw_rx_screen(0x888888);
-				}
-				
-				//Draw LH user info on screen during TX
-				if((fDoOnce == 0 || fDoOnce == 15) && (global_addl_config.micbargraph==3 || global_addl_config.micbargraph == 4)){
-					//gfx_select_font(gfx_font_small);
-					{
-						
-						//gfx_set_fg_color(0x888888);
-						//gfx_set_bg_color(0xff000000);
-						//drawascii("TEST", 147, 60);
-						user_t usr ;
-    
-						if( usr_find_by_dmrid(&usr,src) != 0 ) {
-							int y_index = RX_POPUP_Y_START;
-							
-							//Big font for Callsign
-							gfx_select_font(gfx_font_norm);
-							draw_txt(usr.callsign, RX_POPUP_X_START, y_index, LCD_OPT_FONT_12x24);
-							y_index += GFX_FONT_NORML_HEIGHT+7; 
-
-							//Small font for user name
-							draw_txt(usr.name, RX_POPUP_X_START, y_index, LCD_OPT_FONT_8x16);
-							y_index += GFX_FONT_SMALL_HEIGHT+7 ; // previous line was in small font
-
-							//Draw Place
-							draw_txt(usr.place, RX_POPUP_X_START, y_index, LCD_OPT_FONT_8x16);
-							y_index += GFX_FONT_SMALL_HEIGHT+7; // previous line was in small font
-
-							//Draw State
-							draw_txt(usr.state, RX_POPUP_X_START, y_index, LCD_OPT_FONT_8x16);
-							y_index += GFX_FONT_SMALL_HEIGHT + 7; // previous line was in small font
-
-							//Draw Country
-							draw_txt(usr.country, RX_POPUP_X_START, y_index, LCD_OPT_FONT_8x16);
-							y_index += GFX_FONT_SMALL_HEIGHT + 7; // previous line was in small font
-						}
-
-						gfx_set_fg_color(0xff8032);
-						gfx_set_bg_color(bg_color);
-					}
-				}
-				if (fDoOnce < 200)
-				{
-					fDoOnce++;
-				}
-				else {
-					fDoOnce = 0;
-				}
-            }
-        }
-    }
-
-    if( is_rx && rx_active == 1 ) { // clear screen area
-        //gfx_set_fg_color(0xff8032);
-        //gfx_set_bg_color(bg_color);
-        //gfx_blockfill(9, 54, 151, 70);
-		channel_num = 0;
-		//LCD_FillRect(0, 16, MAX_X - 1/*x2*/,
-		//	MAX_Y - 1/*y2*/, 0);
-        rx_active = 0;
-        red = 0;
-        green = 0;
-
-		CheckTalkgroupAfterChannelSwitch();
-    }
-}
 
 //uint32_t rgb16torgb(uint16_t color) {
 //return (((color & 0xF800) << 5)*8) | (((color & 0x7E0) << 3) * 8) | (((color & 0x1F)) * 8);
@@ -404,10 +146,10 @@ void draw_rx_screen(unsigned int bg_color)
 	gfx_set_bg_color(0xff000000);
 }
 
-void rx_screen_blue_hook(char *bmp, int x, int y)
+/*void rx_screen_blue_hook(unsigned int bg_color)
 {
-	if (nm_screen == 9)
-		nm_screen = 0;
+//	if (nm_screen == 9)
+	//	nm_screen = 0;
 	//netmon_update();
 
 
@@ -423,11 +165,11 @@ void rx_screen_blue_hook(char *bmp, int x, int y)
 		//gfx_drawbmp(bmp, x, y);
 	//}
 
-}
+}*/
 
 void draw_ta_screen(unsigned int bg_color)
 {
-	int dst;
+	/*int dst;
 	int src;
 	int grp;
 
@@ -487,7 +229,7 @@ void draw_ta_screen(unsigned int bg_color)
 
 	gfx_select_font(gfx_font_norm);
 	gfx_set_fg_color(0xff8032);
-	gfx_set_bg_color(0xff000000);
+	gfx_set_bg_color(0xff000000);*/
 }
 /*
 #include <stdlib.h>
@@ -507,163 +249,6 @@ int main(void)
 }
 */
 
-
-void draw_statusline_hook( uint32_t r0 )
-{
-
-# if (CONFIG_APP_MENU)
-    // If the screen is occupied by the optional 'red button menu', 
-    // update or even redraw it completely:
-    if( Menu_DrawIfVisible(AM_CALLER_STATUSLINE_HOOK) )  
-     { return; // the menu covers the entire screen, so don't draw anything else
-     }
-    // NOTE: draw_statusline_hook() isn't called when the squelch
-    //       is 'open' in FM, i.e. when the channel is BUSY .
-    // Of course we don't want to be tyrannized by the radio like that.
-    // It's THE OPERATOR'S decision what to do and when to invoke the menu,
-    // not the radio's. 
-    // Fixed by also calling Menu_DrawIfVisible() from other places .
-# endif // CONFIG_APP_MENU ?
-
-    if( is_netmon_visible() ) {
-        con_redraw();
-        return ;
-    }
-    draw_statusline( r0 );
-}
-
-void draw_alt_statusline()
-{
-	int src;
-
-	gfx_set_fg_color(0);
-	gfx_set_bg_color(0xff8032);
-	gfx_select_font(gfx_font_small);
-
-	char mode = ' ';
-	if (rst_voice_active) {
-		if (rst_mycall) {
-			mode = '*'; // on my tg            
-		}
-		else {
-			mode = '!'; // on other tg
-		}
-	}
-
-	user_t usr, usr2;
-	src = rst_src;
-
-	if (src == 0) {
-		if (global_addl_config.datef == 5 || global_addl_config.datef >= 7)
-		{
-			gfx_printf_pos2(RX_POPUP_X_START, 96, 157, "lh:");
-		}
-		else {
-			gfx_printf_pos2(RX_POPUP_X_START, 96, 157, "TA:");
-		}
-	}
-	else {
-		if (global_addl_config.datef == 6 && talkerAlias.length > 0)				// 2017-02-18 show talker alias in status if rcvd valid
-		{
-			gfx_printf_pos2(RX_POPUP_X_START, 96, 157, "TA: %s", talkerAlias.text);
-		}
-		else {										// 2017-02-18 otherwise show lastheard in status line
-
-			if (usr_find_by_dmrid(&usr, src) == 0) {
-				if (usr_find_by_dmrid(&usr2, rst_dst) != 0 && cfg_tst_display_flag(&global_addl_config, ShowLabelTG)) {
-					gfx_printf_pos2(RX_POPUP_X_START, 96, 157, "lh:%d->%s %c", src, usr2.callsign, mode);
-				}
-				else {
-					gfx_printf_pos2(RX_POPUP_X_START, 96, 157, "lh:%d->%d %c", src, rst_dst, mode);
-				}
-			}
-			else {
-
-				if (usr_find_by_dmrid(&usr2, rst_dst) != 0 && cfg_tst_display_flag(&global_addl_config, ShowLabelTG)) {
-					if (global_addl_config.datef == 7) {
-						gfx_printf_pos2(RX_POPUP_X_START, 96, 157, "lh:%s %s->%d %c", usr.callsign, usr.firstname, rst_dst, mode);
-					}
-					else if (global_addl_config.datef == 8) {
-						gfx_printf_pos2(RX_POPUP_X_START, 96, 157, "lh:%s %s->%s %c", usr.callsign, usr.firstname, usr2.callsign, mode);
-					}
-					else {
-						gfx_printf_pos2(RX_POPUP_X_START, 96, 157, "lh:%s->%s %c", usr.callsign, usr2.callsign, mode);
-					}
-				}
-				else {
-					gfx_printf_pos2(RX_POPUP_X_START, 96, 157, "lh:%s %s->%d %c", usr.callsign, (global_addl_config.datef == 7 ? usr.firstname : " "), rst_dst, mode);
-				}
-			}
-		}
-	}
-
-	gfx_set_fg_color(0);
-	gfx_set_bg_color(0xff000000);
-	gfx_select_font(gfx_font_norm);
-}
-void draw_adhoc_statusline()
-{
-	int x = RX_POPUP_X_START + 20;
-	int y = 55;
-
-	gfx_set_fg_color(0);
-	gfx_set_bg_color(0xff8032);
-	gfx_select_font(gfx_font_small);
-
-	//BOOL fIsAnalog = current_channel_info_E.bIsAnalog;
-
-	//If current channel is DMR
-	{
-		int tgNum = (ad_hoc_tg_channel ? ad_hoc_talkgroup : current_TG());
-		int callType = (ad_hoc_tg_channel ? ad_hoc_call_type : contact.type);
-		user_t usr;
-		if (usr_find_by_dmrid(&usr, tgNum) != 0 && cfg_tst_display_flag(&global_addl_config, ShowLabelTG)) {
-			//gfx_printf_pos2(x, y, 320, "%s - %d", (ad_hoc_call_type == CONTACT_GROUP ? "TG" : "Priv"), ad_hoc_talkgroup);
-
-			gfx_printf_pos2(x, y, 120, "%s%s", (ad_hoc_tg_channel ? "* " : ""), usr.callsign);
-
-		}
-		else {
-			//gfx_printf_pos2(x, y, 320, "%s - %s", (ad_hoc_call_type == CONTACT_GROUP ? "TG" : "Priv"), usr.callsign);
-			gfx_printf_pos2(x, y, 120, "%s%s %d", (ad_hoc_tg_channel ? "* " : ""), (callType == CONTACT_GROUP ? "TG" : "Priv"), tgNum);
-		}
-
-	}
-
-	//draw_extra_info();
-
-	gfx_set_fg_color(0);
-	gfx_set_bg_color(0xff000000);
-	gfx_select_font(gfx_font_norm);
-
-
-}
-
-void draw_datetime_row_hook()
-{
-# if (CONFIG_APP_MENU)
-    // If the screen is occupied by the optional 'red button menu', 
-    // update or even redraw it completely:
-    if( Menu_DrawIfVisible(AM_CALLER_DATETIME_HOOK) )  
-     { return; // the menu covers the entire screen, so don't draw anything else
-     }
-# endif
-
-
-    if( is_netmon_visible() ) {
-        return ;
-    }
-	if (ad_hoc_tg_channel)
-	{
-		draw_adhoc_statusline();
-	}
-    if( is_statusline_visible()) {
-        draw_alt_statusline();
-        return ; 
-    }
-    draw_datetime_row();
- 
-}
 
 /* Displays a startup demo on the device's screen, including some of
    the setting information and a picture or two. */

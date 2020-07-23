@@ -195,9 +195,42 @@ if __name__ == '__main__':
     for adr in aes_cipher_hook_list:
         merger.hookbl(adr, sapplet.getadr("aes_cipher_hook"))
 
+    merger.hookbl(0x0803E124, sapplet.getadr("f_4225_hook"), 0)
+    merger.hookbl(0x08046918, sapplet.getadr("f_4225_hook"), 0)
+
+    #merger.hookbl(0x0802855A, sapplet.getadr("f_4315_hook"))
+    #merger.hookbl(0x0802852E, sapplet.getadr("f_4315_hook"))
+    #merger.hookbl(0x080285F2, sapplet.getadr("f_4315_hook"))
+    #merger.hookbl(0x08028628, sapplet.getadr("f_4315_hook"))
+    
+
+    dmr_call_start_hook_list = [0x0804E55C, 0x0804E5C2, 0x0804E5EA, 0x0804EBB8]
+    for adr in dmr_call_start_hook_list:
+        merger.hookbl(adr, sapplet.getadr("dmr_call_start_hook"))
+		
+    merger.hookbl(0x0804EBC0, sapplet.getadr("dmr_call_end_hook"))
+	
+    dmr_CSBK_handler_hook_list = [0x0804E838, 0x0804EBC8]
+    for adr in dmr_CSBK_handler_hook_list:
+        merger.hookbl(adr, sapplet.getadr("dmr_CSBK_handler_hook"))
+		
+    dmr_handle_data_hook_list = [0x0804EBF4, 0x0804EBFE, 0x0804EC5C]
+    for adr in dmr_handle_data_hook_list:
+        merger.hookbl(adr, sapplet.getadr("dmr_handle_data_hook"))
+
     #//aes_cipher_hook_list = [0x0804C910, 0x00802D372]
     #//for adr in aes_cipher_hook_list:
     #//    merger.hookbl(adr, sapplet.getadr("aes_cipher_hook2"))
+
+    #rx_draw_screen_blue_hook 0802874C 08032FC8 0803AC02
+
+    rxscrn_hooks = [
+        0x0802874C,
+        0x08032FC8,
+        0x0803AC02
+    ]
+    for adr in rxscrn_hooks:
+        merger.hookbl(adr, sapplet.getadr("rx_screen_blue_hook"))
    
 
     print("Merging %s into %s at %08x" % (

@@ -3,14 +3,14 @@
 */
 
 // 160 pixels wide, 128 pixels high
-#define MAX_X 159
-#define MAX_Y 127    
+#define MAX_X 127
+#define MAX_Y 63    
     
 
-#define RX_POPUP_Y_START 22 // 24
+#define RX_POPUP_Y_START 10 // 24
 #define RX_POPUP_X_START 4  // 10
 
-#define STATUS_LINE_Y_START 96 // 24
+#define STATUS_LINE_Y_START 24 // 24
 #define STATUS_LINE_X_START 4  // 10
 
 #define GFX_FONT_SMALL_HEIGHT 12 
@@ -32,7 +32,8 @@
  */
 void gfx_drawtext(wchar_t *str, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t maxlen);
 
-void gfx_drawbmp(char *bmp, int x, int y);
+//void gfx_drawbmp(char *bmp, int x, int y);
+#define gfx_drawbmp
 
 void gfx_set_bg_color(int color);
 void gfx_set_fg_color(int color);
@@ -52,7 +53,7 @@ void gfx_blockfill(int x_from, int y_from, int x_to, int y_to);
 // assume clear ylen = 18 pixels?
 void gfx_drawtext2(wchar_t *str, int x, int y, int xlen); // firmware
 
-void gfx_drawtext6(wchar_t *str, int x, int y, int ylen); // firmware
+//void gfx_drawtext6(wchar_t *str, int x, int y, int ylen); // firmware
 
 void gfx_clear3( int xlen ); // firmware
 

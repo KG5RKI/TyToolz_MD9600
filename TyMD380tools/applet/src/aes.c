@@ -157,6 +157,7 @@ char *aes_cipher_hook2(char *pkt){
   return res;
 }*/
 
+/*
 
 static void do_jump(uint32_t stacktop, uint32_t entrypoint);
 
@@ -183,4 +184,4 @@ static void do_jump(uint32_t stacktop, uint32_t entrypoint)
 int main(void) {
   abort_to_mfgr_app();
 
-}
+}*/

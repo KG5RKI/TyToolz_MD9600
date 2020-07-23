@@ -55,22 +55,22 @@ void dmesg_flush(){
 void printhex(void *buf, int len)
 {
     for (int i = 0; i < len; i++) {
-        printf(" %02x", ((uint8_t*)buf)[i]&0xFF);
+      //  printf(" %02x", ((uint8_t*)buf)[i]&0xFF);
     }
 }
 
 /* Convenience function to print in hex. */
 void printhex2(const char *buf, int len){
-  char strbuf[256];
+ // char strbuf[256];
   int i;
   for(i=0;i<len && len < 255 ;i++){
-    printf(" %02x",buf[i]&0xFF);
+   // printf(" %02x",buf[i]&0xFF);
     if ( (buf[i]&0xFF) > 32 &&  (buf[i]&0xFF) < 127) {
-      strbuf[i]=buf[i]&0xFF;
+    //  strbuf[i]=buf[i]&0xFF;
     } else {
-      strbuf[i]='.';
+   //   strbuf[i]='.';
     }
   }
-  strbuf[++i]='\0';
-  printf("   %s",strbuf);
+  //strbuf[++i]='\0';
+//  printf("   %s",strbuf);
 }
