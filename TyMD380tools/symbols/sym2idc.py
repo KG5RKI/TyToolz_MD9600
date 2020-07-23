@@ -13,6 +13,8 @@ for l in sys.stdin:
         name=words[0];
         adrstr=words[2];
         adr=int(adrstr,16);
+        
+        #print(words)
 
         #Fix up addresses in Flash that look like functions.
         if(adr&0xFF000000==0x08000000):

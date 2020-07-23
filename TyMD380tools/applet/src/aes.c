@@ -1,23 +1,24 @@
 
+
+#define COMPILING_MAIN_C 1  // flag to show warnings in headers only ONCE
+                   // (e.g. "please consider finding symbols.." in gfx.h)
+
+#include "stm32f4_discovery.h"
+#include "stm32f4xx_conf.h" // again, added because ST didn't put it here ?
+
 #include <string.h>
 
-#include "md380.h"
-#include "printf.h"
-#include "dmesg.h"
-#include "version.h"
-#include "tooldfu.h"
-#include "config.h"
-#include "gfx.h"
-
-
+char* aes_cipher(char *pkt);
+char* aes_cipher2(char *pkt);
+//void _exit(int status){}
 
 
 /* These Motorola Basic Privacy keys are sampled manually from silent
    frames in the air, so they are imperfect and likely contain flipped
    bits.  A better method would be to extract the complete sequence from
    either motorola firmware or automatically fetch them from the first
-   frame of a transmission.
- */
+   frame of a transmission. 
+ */ 
 const char* getmotorolabasickey(int i){
   switch(i&0xFF){
   case 1:
@@ -94,50 +95,9 @@ const char* getmotorolabasickey(int i){
   case 255:
     return "\x98\x06\x98\xF6\x98\xF6\x01";
   default:
-    printf("\nERROR: Motorola Basic Key %d is unknown.\n",i);
-    return "ERROR MESSAGE";
+    //printf("\nERROR: Motorola Basic Key %d is unknown.\n",i);
+    return "\x00\x00\x00\x00\x00\x00\x00";
   }
-}
-
-/* This hook intercepts calls to an initial AES check at startup that
-   might (or might not) be related to the ALPU-MP chip.
-
-   Is not related to the ALPU-MP chip (20160720ae)
-   ALPU-MP "lib" has his own ?-Crypto
-*/
-void aes_startup_check_hook(){
-#ifdef CONFIG_AES
-  printf("Performing AES startup check.\n");
-  //Call back to the original function.
-  /* int *toret= */ aes_startup_check();
-  
-  
-  /* aes_startup_check() will set the byte at 0x2001d39b to 0x42,
-     which is then checked repeatedly elsewhere in the code, causing
-     mysterious things to fail.  If we find that this check has failed,
-     let's force it back the other way and hope for the best.
-  */
-  if(*((char*)0x2001d39b)!=0x42){
-    printf("Startup AES check failed.  Attempting to forge the results.\n");
-    printf("*0x2001d39b = 0x%02x\n", *((char*)0x2001d39b));
-    
-    //Force the correct value.
-    *((char*)0x2001d39b)=0x42;
-  }
-#endif //CONFIG_AES
-}
-
-/* This hook intercepts calls to aes_loadkey(), so that AES keys can
-   be printed to the dmesg log.
-*/
-char *aes_loadkey_hook(char *key){
-  //Print the key that we are to load.
-  printf("aes_loadkey (0x%08x): ",key);
-  printhex(key,16);
-  printf("\n");
-  
-  key=aes_loadkey(key);
-  return key;
 }
 
 /* This hook intercepts calls to aes_cipher(), which is used to turn
@@ -153,29 +113,74 @@ char *aes_loadkey_hook(char *key){
  */
 char *aes_cipher_hook(char *pkt){
   char *res;
-  int i, sum=0;
-  printf("aes_cipher(0x%08x);\nIN  :",pkt);
-  printhex(pkt,16);       //Print the Enhanced Privacy Key
-
+  int i, sum=0,b=0;
+ 
   
   //Sum all the the first byte, looking for near-empty keys.
   for(i=1;i<16;i++)
     sum|=pkt[i];
   if(!sum){
-    printf("\nHooking keystream for Motorola Basic Privacy compatibility.\n");
-    memcpy(pkt,getmotorolabasickey(pkt[0]),7);
-    printhex(pkt,16);       //Print the keystream it produces. (First 49 bits are XOR'ed with the audio.)
-    printf("\n");
-    return pkt;
+    res = getmotorolabasickey(pkt[0]);
+    for(b=0; b<7; b++){
+        pkt[b]=res[b];
+    }
+     return pkt;
   }
   
-  /* The key has more than its least-significant byte set, so we'll
-     use the original Tytera algorithm.  At some point, it might make
-     sense to replace this with proper crypto, rather than XOR.
-  */
-  printf("\nOUT :");
   res=aes_cipher(pkt);
-  printhex(res,16);       //Print the keystream it produces. (First 49 bits are XOR'ed with the audio.)
-  printf("\n");
+
   return res;
+}
+/*
+char *aes_cipher_hook2(char *pkt){
+  char *res;
+  int i, sum=0,b=0;
+  char tt=pkt[0];
+ 
+  
+  //Sum all the the first byte, looking for near-empty keys.
+  for(i=1;i<16;i++)
+    sum|=pkt[i];
+
+  //if(!sum){
+
+    for(b=0; b<7; b++){
+        pkt[b]=getmotorolabasickey(1)[b];
+    }
+    //memcpy(pkt,getmotorolabasickey(pkt[0]),7);
+    
+    return pkt;
+  //}
+  
+  res=aes_cipher(pkt);
+
+  return res;
+}*/
+
+
+static void do_jump(uint32_t stacktop, uint32_t entrypoint);
+
+#define MFGR_APP_LOAD_ADDRESS     0x0800C000
+#define SIDELOAD_RESET_VECTOR     8
+#define SIDELOAD_APP_LOAD_ADDRESS 0x080BF000
+
+static void abort_to_mfgr_app(void) {
+	const uint32_t *app_base = (const uint32_t *)MFGR_APP_LOAD_ADDRESS;
+	SCB->VTOR = MFGR_APP_LOAD_ADDRESS;
+	do_jump(app_base[0], app_base[SIDELOAD_RESET_VECTOR]);
+}
+
+static void do_jump(uint32_t stacktop, uint32_t entrypoint)
+{
+	asm volatile(
+		"msr msp, %0	\n"
+		"bx	%1	\n"
+		: : "r" (stacktop), "r" (entrypoint) : );
+	// just to keep noreturn happy
+	for (;;) ;
+}
+
+int main(void) {
+  abort_to_mfgr_app();
+
 }

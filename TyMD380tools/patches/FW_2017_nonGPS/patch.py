@@ -44,7 +44,7 @@ if __name__ == '__main__':
     #patcher.sethword(0x0801C6FE, 0x2001)
     #patcher.sethword(0x0801C718, 0x11B0) #fix a typo..
 	
-	
+	#0x08098800
     # freeing ~200k for code patches
     patcher.ffrange(0x80986E8, 0x80CCF54)
 

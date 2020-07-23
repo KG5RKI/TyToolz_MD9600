@@ -3,7 +3,7 @@ RELEASE=dist/md380tools-`date "+%Y-%m-%d"`
 
 .PHONY: dist
 
-all: image_D13
+all: image_RT90_nonGPS
 
 # cleans everything also downloaded files
 distclean: clean
@@ -19,6 +19,7 @@ clean:
 	"${MAKE}" -C patches/d13.020 clean
 	"${MAKE}" -C patches/FW_2017_nonGPS clean
 	"${MAKE}" -C patches/FW_2017_GPS clean
+	"${MAKE}" -C patches/FW_RT90_nonGPS clean
 	"${MAKE}" -C applet clean
 	"${MAKE}" -C annotations clean
 	"${MAKE}" -C emulator clean
@@ -35,6 +36,9 @@ image_S13:
 	
 image_2017_nonGPS:
 	"${MAKE}" -C applet FW=FW_2017_nonGPS all
+
+image_RT90_nonGPS:
+	"${MAKE}" -C applet FW=FW_RT90_nonGPS all
 
 image_2017_GPS:
 	"${MAKE}" -C applet FW=FW_2017_GPS all  
@@ -80,6 +84,10 @@ flash_FW_2017_nonGPS: image_2017_nonGPS
 
 flash_FW_2017_GPS: image_2017_GPS
 	sudo python ./md380_dfu.py new_upgrade applet/experiment.bin
+
+flash_FW_RT90_nonGPS: image_RT90_nonGPS
+	sudo python ./md380_dfu.py new_upgrade applet/experiment.bin
+
 
 sync:
 	"${MAKE}" -C annotations sync

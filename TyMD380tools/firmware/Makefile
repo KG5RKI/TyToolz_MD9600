@@ -35,3 +35,6 @@ unwrapped/FW_2017_GPS.img: $(OPT)
 unwrapped/FW_2017_nonGPS.img: $(OPT) 	
 	"${MAKE}" -f Makefile_orig unwrapped/FW_2017_nonGPS.img
 	
+unwrapped/FW_RT90_nonGPS.img: $(OPT) 	
+	"${MAKE}" -f Makefile_orig unwrapped/FW_RT90_nonGPS.img
+	

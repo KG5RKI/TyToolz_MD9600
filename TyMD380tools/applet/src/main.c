@@ -75,7 +75,7 @@ static void do_jump(uint32_t stacktop, uint32_t entrypoint);
 
 #define MFGR_APP_LOAD_ADDRESS     0x0800C000
 #define SIDELOAD_RESET_VECTOR     8
-#define SIDELOAD_APP_LOAD_ADDRESS 0x0809D000
+#define SIDELOAD_APP_LOAD_ADDRESS 0x080BD900
 
 static void abort_to_mfgr_app(void) {
 	const uint32_t *app_base = (const uint32_t *)MFGR_APP_LOAD_ADDRESS;

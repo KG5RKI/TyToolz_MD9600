@@ -1,7 +1,7 @@
 
 MKLISTING=1
 
-FW ?= FW_2017_nonGPS
+FW ?= FW_RT90_nonGPS
 
 ifeq (,$(wildcard mark.tmp))
 	# not exists
@@ -43,15 +43,23 @@ else ifeq ($(FW),FW_2017_GPS)
     SRCVERSION=FW_2017_GPS
     PATCHDIR=FW_2017_GPS
     MERGEBASE=0x8098800
+else ifeq ($(FW),FW_RT90_GPS)
+    FWDEFINE=FW_RT90_GPS
+    SRCVERSION=FW_RT90_GPS
+    PATCHDIR=FW_RT90_GPS
+    MERGEBASE=0x08088190
+else ifeq ($(FW),FW_RT90_nonGPS)
+    FWDEFINE=FW_RT90_nonGPS
+    SRCVERSION=FW_RT90_nonGPS
+    PATCHDIR=FW_RT90_nonGPS
+    MERGEBASE=0x080BD900
 else 
+
+
 $(error select firmware version)
 endif
 
-SRCS  = main.o printf.o dmesg.o system_stm32f4xx.o debug.o os.o
-SRCS += spiflash.o usb.o usersdb.o
-SRCS += radiostate.o etsi.o dmr.o 
-SRCS += gfx.o keyb.o lastheard.o console.o lcd_driver.o syslog.o netmon.o 
-SRCS += menu.o addl_config.o util.o ambe.o beep.o font_8_8.o irq_handlers.o timer.o  
+SRCS  = aes.o system_stm32f4xx.o 
 
 ###################################################
 
@@ -65,7 +73,7 @@ LINKSCRIPT=applet_$(SRCVERSION).ld
 
 CFLAGS += -std=gnu99 -g -O2 -Wall -T$(LINKSCRIPT)
 CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4 -mthumb-interwork
-CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
+#CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 CFLAGS += -fshort-wchar
 ifdef MKLISTING
 CFLAGS += -Wa,-a=$(@:.o=.lst)
@@ -124,7 +132,7 @@ merged.img: applet.img base.img
 
 #The wrapped file is the one that works with the Windows updater.
 wrapped.bin: merged.img
-	cp ../firmware/RT82_header_rsrc.bin ./RT82_header_rsrc.bin
+	cp ../firmware/RT90_header_rsrc.bin ./RT90_header.bin
 	python ../md380_fw.py --wrap merged.img wrapped.bin
 
 experiment.bin: wrapped.bin
