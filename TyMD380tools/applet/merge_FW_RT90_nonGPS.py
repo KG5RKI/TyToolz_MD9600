@@ -218,12 +218,7 @@ if __name__ == '__main__':
     for adr in dmr_handle_data_hook_list:
         merger.hookbl(adr, sapplet.getadr("dmr_handle_data_hook"))
 
-    #//aes_cipher_hook_list = [0x0804C910, 0x00802D372]
-    #//for adr in aes_cipher_hook_list:
-    #//    merger.hookbl(adr, sapplet.getadr("aes_cipher_hook2"))
-
-    #rx_draw_screen_blue_hook 0802874C 08032FC8 0803AC02
-
+ 
     rxscrn_hooks = [
         0x0802874C,
         0x08032FC8,
