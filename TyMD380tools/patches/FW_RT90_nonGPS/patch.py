@@ -15,7 +15,8 @@ if __name__ == '__main__':
     print("Creating patches from unwrapped.img.")
     patcher = Patcher("unwrapped.img")
 	
-	
+    patcher.sethword(0x080331E8, 0x2054)
+
     # freeing ~200k for code patches
     patcher.ffrange(0x080BD7F0, 0x080C4800)
 

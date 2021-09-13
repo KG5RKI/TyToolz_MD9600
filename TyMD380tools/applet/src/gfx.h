@@ -7,11 +7,11 @@
 #define MAX_Y 63    
     
 
-#define RX_POPUP_Y_START 10 // 24
-#define RX_POPUP_X_START 4  // 10
+#define RX_POPUP_Y_START 16 // 24
+#define RX_POPUP_X_START 2  // 10
 
-#define STATUS_LINE_Y_START 24 // 24
-#define STATUS_LINE_X_START 4  // 10
+#define STATUS_LINE_Y_START 13 // 24
+#define STATUS_LINE_X_START 1  // 10
 
 #define GFX_FONT_SMALL_HEIGHT 12 
 #define GFX_FONT_NORML_HEIGHT 16

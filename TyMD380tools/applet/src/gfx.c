@@ -197,15 +197,16 @@ void rx_screen_blue_hook(unsigned int bg_color)
 	gfx_set_fg_color(0x000000);
 	gfx_select_font(gfx_font_small);
 
-	user_t usr;
+	user_t usr, usr_tg;
 
 	if (usr_find_by_dmrid(&usr, src) == 0) {
-		usr.callsign = "ID unknown";
+
+		sprintf(usr.callsign, "%d", src);
 		usr.firstname = "";
-		usr.name = "No entry in";
-		usr.place = "your user.bin";
-		usr.state = "see README.md";
-		usr.country = "on Github";
+		usr.name = "";
+		usr.place = "";
+		usr.state = "";
+		usr.country = "";
 	}
 
 	gfx_select_font(gfx_font_small);
@@ -223,7 +224,7 @@ void rx_screen_blue_hook(unsigned int bg_color)
 	}
 	y_index += GFX_FONT_SMALL_HEIGHT;*/
 
-	gfx_select_font(gfx_font_norm); // switch to large font
+	gfx_select_font(gfx_font_small); // switch to small font
 
 	char firstnamebuf[12] = { 0 };
 	for (int i = 0; i < 12; i++) {
@@ -231,22 +232,34 @@ void rx_screen_blue_hook(unsigned int bg_color)
 		{
 			memcpy(firstnamebuf, usr.name, i);
 		}
-	}
+	} 
 
 	//If user is admin/cool
-	if (usr.fUserType) {
-		gfx_set_fg_color(0x0808b2);
-		gfx_select_font(gfx_font_norm); // switch to large font
-		gfx_printf_pos2(RX_POPUP_X_START, y_index, 10, "[ %s ] ", usr.callsign);
-		gfx_set_fg_color(0x000000);
+	
+	//gfx_select_font(gfx_font_norm); // switch to large font
+	gfx_printf_pos2(RX_POPUP_X_START, y_index, 10, "%s - %s", usr.callsign, usr.firstname);
+	
+	y_index += GFX_FONT_SMALL_HEIGHT;
+
+	if (usr_find_by_dmrid(&usr_tg, dst) == 0) {
+		gfx_printf_pos2(RX_POPUP_X_START, y_index, 10, "TG: %d", dst);
+	} else {
+		gfx_printf_pos2(RX_POPUP_X_START, y_index, 10, "TG: %d", usr_tg.name);
 	}
-	else {
-		gfx_select_font(gfx_font_norm); // switch to large font
-		gfx_printf_pos2(RX_POPUP_X_START, y_index, 10, "%s %s", usr.callsign, firstnamebuf);
-	}
-	y_index += GFX_FONT_NORML_HEIGHT;
+
+	y_index += GFX_FONT_SMALL_HEIGHT;
+
+	gfx_printf_pos2(RX_POPUP_X_START, y_index, 10, "%s", usr.country);
+
+	y_index += GFX_FONT_SMALL_HEIGHT;
+
+	gfx_printf_pos2(RX_POPUP_X_START, y_index, 10, "%s, %s", usr.place, usr.state);
 
 	
+
+	
+
+	/*
     {
 		// user.bin or codeplug or talkerAlias length=0
 		nameLen = strlen(usr.name);
@@ -257,22 +270,22 @@ void rx_screen_blue_hook(unsigned int bg_color)
 		}
 		else {  // print in larger font if it will fit
 			gfx_puts_pos(RX_POPUP_X_START, y_index, usr.name);
-			y_index += GFX_FONT_NORML_HEIGHT;
+			y_index += GFX_FONT_SMALL_HEIGHT;
 		}
-	}
+	}*/
 
-	y_index += 3;
+	//y_index += 3;
 	//if (global_addl_config.userscsv > 1) {
-		gfx_set_fg_color(0x00FF00);
+		//gfx_set_fg_color(0x00FF00);
 	//}
 	//else {
 	//	gfx_set_fg_color(0x0000FF);
 	//}
-	gfx_blockfill(1, y_index, 156, y_index);
-	gfx_set_fg_color(0x000000);
-	y_index += 2;
+	//gfx_blockfill(1, y_index, 156, y_index);
+	//gfx_set_fg_color(0x000000);
+	//y_index += 2;
 
-	gfx_select_font(gfx_font_small);
+	//gfx_select_font(gfx_font_small);
 
 
 	/*	if (src != 0) {
